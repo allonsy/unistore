@@ -3,6 +3,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/allonsy/unistore/controller"
 	t "github.com/allonsy/unistore/template"
 	"log"
 	"net/http"
@@ -13,14 +14,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	templates := t.GetTemplates()
-	fmt.Println(templates.DefinedTemplates())
 
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		err = templates.ExecuteTemplate(w, "html/home.html", nil)
-		if err != nil {
-			log.Panic(err)
-		}
-	})
+	fmt.Println(t.GetTemplates().DefinedTemplates())
+	controller.Init()
 	http.ListenAndServe(":8080", nil)
 }

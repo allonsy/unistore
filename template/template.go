@@ -2,6 +2,7 @@ package template
 
 import (
 	t "html/template"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -12,7 +13,7 @@ var templates *t.Template
 func ParseTemplates() error {
 	templates = t.New("")
 	var err error
-	filepath.Walk("template/html", func(path string, info os.FileInfo, err_ error) error {
+	parseFunc := func(path string, info os.FileInfo, err_ error) error {
 		if info.IsDir() {
 			return nil
 		}
@@ -24,7 +25,10 @@ func ParseTemplates() error {
 			err = parseFile(path)
 			return err
 		}
-	})
+	}
+	filepath.Walk("template/html", parseFunc)
+	filepath.Walk("template/css", parseFunc)
+	filepath.Walk("template/js", parseFunc)
 	return err
 }
 
@@ -47,4 +51,8 @@ func parseFile(path string) error {
 
 func GetTemplates() *t.Template {
 	return templates
+}
+
+func ExecuteTemplate(w io.Writer, name string, v interface{}) error {
+	return templates.ExecuteTemplate(w, name, v)
 }
